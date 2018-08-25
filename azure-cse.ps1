@@ -7,7 +7,8 @@ Write-Host("Running custom script")
 # ****************************************************
 Write-Host "Get-AzureRmVm"
 Get-AzureRmVm >> "D:\VMs.txt"
-$vm = Get-AzureRmVm | Select -First 1
+
+New-AzureRmResourceGroup -Name "sacagov-cse-test" -Location "usgovtexas"
 # ****************************************************
 
 Write-Host("Adding deletion scheduled task")
