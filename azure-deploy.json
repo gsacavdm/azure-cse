@@ -2,9 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "type": "string"
-        },
         "virtualMachineName": {
             "type": "string"
         },
@@ -14,69 +11,57 @@
         "adminUsername": {
             "type": "string"
         },
-        "virtualNetworkName": {
-            "type": "string"
-        },
-        "networkInterfaceName": {
-            "type": "string"
-        },
-        "networkSecurityGroupName": {
-            "type": "string"
-        },
         "adminPassword": {
             "type": "securestring"
         },
-        "diagnosticsStorageAccountName": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountId": {
-            "type": "string"
-        },
-        "diagnosticsStorageAccountType": {
-            "type": "string"
-        },
-        "addressPrefix": {
-            "type": "string"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "subnetPrefix": {
-            "type": "string"
-        },
-        "publicIpAddressName": {
-            "type": "string"
-        },
-        "publicIpAddressType": {
-            "type": "string"
-        },
-        "publicIpAddressSku": {
-            "type": "string"
-        },
-        "scriptUri" : {
+        "fileUris": {
             "type": "string",
-            "defaultValue": "https://gist.githubusercontent.com/gsacavdm/b4e81398d3c04af910b7904ee8b1ecf5/raw/4e73ad22a3867340cf14fc98bcb55e6c868002fa/azure-cse.ps1"
+            "defaultValue": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-delete.ps1"
+        },
+        "arguments": {
+            "type": "string",
+            "defaultValue": ""
         }
     },
     "variables": {
-        "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "location": "[resourceGroup().location]",
+        "virtualNetworkName": "[concat(variables('virtualMachineName'), '-vnet')]",
+        "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
+        "addressPrefix": "172.16.4.0/24",
+        "subnetName": "default",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+        "subnetPrefix": "172.16.4.0/24",
+        "networkInterfaceName": "[concat(variables('virtualMachineName'), '-nic')]",
+        "networkSecurityGroupName": "[concat(variables('virtualMachineName'), '-nsg')]",
+        "publicIpAddressName": "[concat(variables('virtualMachineName'), '-pip')]",
+        "publicIpAddressType": "Dynamic",
+        "publicIpAddressSku": "Basic",
         "diagnosticsExtensionName": "IaaSDiagnostics",
+        
         "builtInRoleType": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-        "rbacGuid": "[guid(resourceGroup().id)]"
+        "rbacGuid": "[guid(subscription().subscriptionId)]",
+
+        "UriFileNamePieces": "[split(parameters('fileUris'), '/')]",
+        "firstFileNameString": "[variables('UriFileNamePieces')[sub(length(variables('UriFileNamePieces')), 1)]]",
+        "firstFileNameBreakString": "[split(variables('firstFileNameString'), '?')]",
+        "firstFileName": "[variables('firstFileNameBreakString')[0]]",
+        
+        "diagnosticsStorageAccountName": "[concat(variables('virtualMachineName'), 'diag')]",
+        "diagnosticsStorageAccountId": "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
+        "diagnosticsStorageAccountType": "Standard_LRS"
     },
     "resources": [
         {
             "name": "[parameters('virtualMachineName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]",
                 "[concat('Microsoft.Storage/storageAccounts/', parameters('diagnosticsStorageAccountName'))]"
             ],
-            "identity": { 
-              "type": "SystemAssigned"
+            "identity": {
+                "type": "SystemAssigned"
             },
             "properties": {
                 "osProfile": {
@@ -124,7 +109,7 @@
             "name": "[concat(parameters('virtualMachineName'),'/', variables('diagnosticsExtensionName'))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2017-12-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
             ],
@@ -366,24 +351,20 @@
             }
         },
         {
-            "name": "Microsoft.CustomScriptExtension-20180824225424",
-            "apiVersion": "2015-01-01",
-            "type": "Microsoft.Resources/deployments",
+            "name": "[concat(parameters('virtualMachineName'),'/CustomScriptExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "[variables('location')]",
+            "apiVersion": "2015-06-15",
             "properties": {
-                "mode": "incremental",
-                "templateLink": {
-                    "uri": "https://gallery.azure.us/artifact/20161101/Microsoft.CustomScriptExtension-arm.2.0.50/Artifacts/MainTemplate.json"
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.7",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[split(parameters('fileUris'), ' ')]"
                 },
-                "parameters": {
-                    "vmName": {
-                        "value": "parameters('virtualMachineName')"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "fileUris": {
-                        "value": "[parameters('scriptUri')]"
-                    }
+                "protectedSettings": {
+                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', variables('firstFileName'), ' ', parameters('arguments'))]"
                 }
             },
             "dependsOn": [
@@ -394,7 +375,7 @@
             "name": "[parameters('diagnosticsStorageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2015-06-15",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "accountType": "[parameters('diagnosticsStorageAccountType')]"
             }
@@ -403,7 +384,7 @@
             "name": "[parameters('virtualNetworkName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -424,7 +405,7 @@
             "name": "[parameters('networkInterfaceName')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2018-04-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "[concat('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName'))]",
@@ -455,7 +436,7 @@
             "name": "[parameters('publicIpAddressName')]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2017-08-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
             },
@@ -467,7 +448,7 @@
             "name": "[parameters('networkSecurityGroupName')]",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2018-01-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "securityRules": [
                     {
@@ -489,18 +470,18 @@
             }
         },
         {
-          "apiVersion": "2017-09-01",
-           "type": "Microsoft.Authorization/roleAssignments",
-           "name": "[variables('rbacGuid')]",
-           "properties": {
-                  "roleDefinitionId": "[variables('builtInRoleType')]",
-                  "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
-                  "scope": "[resourceGroup().id]"
+            "apiVersion": "2017-09-01",
+            "type": "Microsoft.Authorization/roleAssignments",
+            "name": "[variables('rbacGuid')]",
+            "properties": {
+                "roleDefinitionId": "[variables('builtInRoleType')]",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
+                "scope": "[resourceGroup().id]"
             },
             "dependsOn": [
-                  "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
-              ]
-      }
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ]
+        }
     ],
     "outputs": {
         "adminUsername": {
