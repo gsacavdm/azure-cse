@@ -42,7 +42,7 @@ function New-AzureDeleteResourceGroupTask() {
 }
 
 if (!(Get-PackageProvider NuGet)) {
-  Write-Host "Installing AzureRM"
+  Write-Host "Installing NuGet  "
   Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 }
 

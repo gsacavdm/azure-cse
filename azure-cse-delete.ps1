@@ -1,6 +1,10 @@
-./azure-cse-utils.ps1
+$ErrorActionPreference = "Stop"
 
+Write-Host("Loading azure-cse-utils")
+. $PSScriptRoot/azure-cse-utils.ps1
+
+Write-Host("Getting VM's resource group")
 $resourceGroupName = Get-AzureResourceGroup
 
 Write-Host("Deleting " + $resourceGroupName)
-Remove-AzureRmResouceGroup -Name $resourceGroupName
+Remove-AzureRmResourceGroup -Name $resourceGroupName -Force
