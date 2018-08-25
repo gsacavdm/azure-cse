@@ -41,8 +41,8 @@ function New-AzureDeleteResourceGroupTask() {
   Register-ScheduledTask T1 -InputObject $task
 }
 
-if (!(Get-PackageProvider NuGet)) {
-  Write-Host "Installing NuGet  "
+if (!(Get-PackageProvider | Where-Object Name -match NuGet)) {
+  Write-Host "Installing NuGet"
   Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 }
 
