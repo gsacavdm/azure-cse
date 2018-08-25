@@ -440,7 +440,7 @@
             "properties": {
                 "publicIpAllocationMethod": "[variables('publicIpAddressType')]",
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('virtualMachineName')]",
+                    "domainNameLabel": "[variables('virtualMachineName')]"
                 }
             },
             "sku": {
