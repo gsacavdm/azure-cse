@@ -16,7 +16,7 @@
         },
         "fileUris": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-delete.ps1"
+            "defaultValue": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse-delete.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/azure-cse.ps1"
         },
         "arguments": {
             "type": "string",
@@ -440,7 +440,7 @@
             "properties": {
                 "publicIpAllocationMethod": "[variables('publicIpAddressType')]",
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('virtualMachineName')]"
+                    "domainNameLabel": "[parameters('virtualMachineName')]"
                 }
             },
             "sku": {
