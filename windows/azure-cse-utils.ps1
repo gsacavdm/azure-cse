@@ -1,12 +1,12 @@
 function Get-AzureEnvironment () {
-  $metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"}
+  $metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"} -UseBasicParsing
   $metadata = ConvertFrom-Json ($metadataResponse.Content)
 
-  $endpointsResponse = Invoke-WebRequest "https://management.azure.com/metadata/endpoints?api-version=2017-12-01"
+  $endpointsResponse = Invoke-WebRequest "https://management.azure.com/metadata/endpoints?api-version=2017-12-01" -UseBasicParsing
   $endpoints = ConvertFrom-Json ($endpointsResponse.Content)
 
   foreach ($cloud in $endpoints.cloudEndpoint.PSObject.Properties) {
-    $matchingLocation = $cloud.Value.locations | where {$_ -match $metadata.location}
+    $matchingLocation = $cloud.Value.locations | Where-Object {$_ -match $metadata.location}
     if ($matchingLocation) { 
       $cloudName = $cloud.name
       break

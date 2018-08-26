@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "value": "sacagov-cse"
+        },
+        "virtualMachineSize": {
+            "value": "Standard_D4s_v3"
+        },
+        "adminUsername": {
+            "value": "gsacavdm"
+        },
+        "adminPassword": {
+            "value": "c3be177c-085a-4ca9-8abc-0aaf08ee5bc3"
+        }
+    }
+}
