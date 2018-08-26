@@ -1,5 +1,9 @@
 param (
-  [string] $ExampleParam
+  [bool] $DeleteAfterDone = $false,
+  [string] $ExecutionId  = "",
+
+  # Replace with your own parameters:
+  [string] $ExampleParam = "ExampleParamDefaultValue"
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,5 +24,7 @@ Write-Host("Running custom script")
 ./azure-deploy.ps1 -ExampleParam $ExampleParam
 # ****************************************************
 
-Write-Host("Adding deletion scheduled task")
-New-AzureDeleteResourceGroupTask
+if ($DeleteAfterDone) {
+  Write-Host("Adding deletion scheduled task")
+  New-AzureDeleteResourceGroupTask
+}

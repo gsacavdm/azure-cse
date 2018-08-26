@@ -18,6 +18,10 @@ For deployments that just have a few scripts, all you need to do is:
 1. Modify the middle section of `azure-cse.ps1` to execute your deployment actions or call your scripts.
 1. Deploy!
 
+    ```bash
+    az group deployment create -g azure-cse -n $(date +%Y%m%d_%H%M%S) --template-file azure-deploy.json --parameters executionId=$(date +%Y%m%d_%H%M%S)
+    ```
+
 ## Troubleshooting
 If the script fails, it won't schedule the delete task and even if it succeeds, you have 5 minutes to remote into the machine and poke around.
 

@@ -2,6 +2,9 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "executionId": {
+            "type": "string"
+        },
         "virtualMachineName": {
             "type": "string"
         },
@@ -21,14 +24,6 @@
         "arguments": {
             "type": "string",
             "defaultValue": ""
-        },
-        "rbacRoleDefinitionId": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "rbacScope": {
-            "type": "string",
-            "defaultValue": ""            
         }
     },
     "variables": {
@@ -48,9 +43,6 @@
         
         "rbacRoleTypeRg": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "rbacGuidRg": "[guid(concat('cseResourceGroup', resourceGroup().id))]",
-
-        "rbacRoleTypeResource": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('rbacRoleDefinitionId'))]",
-        "rbacGuidResource": "[guid(concat('cseResources', resourceGroup().id))]",
 
         "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse.ps1",
         "UriFileNamePieces": "[split(variables('coreFileUris'), '/')]",
@@ -378,11 +370,12 @@
                     "fileUris": "[split(variables('fileUris'), ' ')]"
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', variables('firstFileName'), ' ', parameters('arguments'))]"
+                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', variables('firstFileName'), ' -ExecutionId ', parameters('executionId'), ' ', parameters('arguments'))]"
                 }
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]",
+                "[concat('Microsoft.Authorization/roleAssignments/', variables('rbacGuidRg'))]"
             ]
         },
         {
@@ -494,20 +487,6 @@
                 "roleDefinitionId": "[variables('rbacRoleTypeRg')]",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
                 "scope": "[resourceGroup().id]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
-            ]
-        },
-        {
-            "apiVersion": "2017-09-01",
-            "condition": "[not(equals(parameters('rbacRoleDefinitionId'),''))]",
-            "type": "Microsoft.Authorization/roleAssignments",
-            "name": "[variables('rbacGuidResource')]",
-            "properties": {
-                "roleDefinitionId": "[variables('rbacRoleTypeResource')]",
-                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
-                "scope": "[parameters('rbacScope')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
