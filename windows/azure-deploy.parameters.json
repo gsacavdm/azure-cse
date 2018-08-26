@@ -3,16 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "virtualMachineName": {
-            "value": "sacagov-cse"
+            "value": "azure-cse"
         },
         "virtualMachineSize": {
             "value": "Standard_D4s_v3"
         },
-        "adminUsername": {
-            "value": "gsacavdm"
+        "scriptUris": {
+            "value": "https://gist.githubusercontent.com/gsacavdm/371bc219d3a6f708aec399894cc13781/raw/183042f46d94714ef52b800c8cafa2ee8ba27a37/azure-deploy.ps1"
         },
-        "adminPassword": {
-            "value": "c3be177c-085a-4ca9-8abc-0aaf08ee5bc3"
+        "arguments": {
+            "value": "-ExampleParam example"
+        },
+        "rbacRoleDefinitionId": {
+            "value": "8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+        },
+        "rbacScope": {
+            "value": "/subscription/0b79d7af-c7eb-4614-b74c-98011cc73ea7"            
         }
     }
 }

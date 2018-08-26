@@ -1,3 +1,7 @@
+param (
+  [string] $ExampleParam
+)
+
 $ErrorActionPreference = "Stop"
 
 Write-Host("Loading azure-cse-utils")
@@ -5,10 +9,15 @@ Write-Host("Loading azure-cse-utils")
 
 Write-Host("Running custom script")
 # ****************************************************
-# == This is the piece that will change ==
+# == Custom Script Exeuction/Bootstrapping ==
 # ****************************************************
-Write-Host "Get-AzureRmVm"
-Get-AzureRmVm >> "D:\VMs.txt"
+# Modify this section to either:
+# a) Execute scripting actions directly in here
+# b) Call any script you added to the arguments parameter
+# c) Unzip your deployment scripts & tools you added to the arguments parameters and kick-off your main deployment script
+
+# Sample script hosted in a GitHub gist
+$PSScriptRoot/azure-deploy.ps1 -ExampleParam $ExampleParam
 # ****************************************************
 
 Write-Host("Adding deletion scheduled task")

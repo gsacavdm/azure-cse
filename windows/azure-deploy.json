@@ -14,13 +14,21 @@
         "adminPassword": {
             "type": "securestring"
         },
-        "fileUris": {
+        "scriptUris": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse.ps1"
+            "defaultValue": ""
         },
         "arguments": {
             "type": "string",
             "defaultValue": ""
+        },
+        "rbacRoleDefinitionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "rbacScope": {
+            "type": "string",
+            "defaultValue": ""            
         }
     },
     "variables": {
@@ -38,13 +46,19 @@
         "publicIpAddressSku": "Basic",
         "diagnosticsExtensionName": "IaaSDiagnostics",
         
-        "builtInRoleType": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-        "rbacGuid": "[guid(subscription().subscriptionId)]",
+        "rbacRoleTypeRg": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "rbacGuidRg": "[guid(concat('cseResourceGroup', resourceGroup().id))]",
 
-        "UriFileNamePieces": "[split(parameters('fileUris'), '/')]",
+        "rbacRoleTypeResource": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('rbacRoleDefinitionId'))]",
+        "rbacGuidResource": "[guid(concat('cseResources', resourceGroup().id))]",
+
+        "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse.ps1",
+        "UriFileNamePieces": "[split(variables('coreFileUris'), '/')]",
         "firstFileNameString": "[variables('UriFileNamePieces')[sub(length(variables('UriFileNamePieces')), 1)]]",
         "firstFileNameBreakString": "[split(variables('firstFileNameString'), '?')]",
         "firstFileName": "[variables('firstFileNameBreakString')[0]]",
+        
+        "fileUris": "[concat(parameters('scriptUris'), ' ', variables('coreFileUris'))]",
         
         "diagnosticsStorageAccountName": "[concat(replace(parameters('virtualMachineName'),'-',''), 'diag')]",
         "diagnosticsStorageAccountId": "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
@@ -100,7 +114,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('https://', variables('diagnosticsStorageAccountName'), '.blob.core.usgovcloudapi.net/')]"
+                        "storageUri": "[reference(concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')), '2016-01-01').primaryEndpoints.blob]"
                     }
                 }
             }
@@ -346,7 +360,7 @@
                 "protectedSettings": {
                     "storageAccountName": "[variables('diagnosticsStorageAccountName')]",
                     "storageAccountKey": "[listKeys(variables('diagnosticsStorageAccountId'),'2015-06-15').key1]",
-                    "storageAccountEndPoint": "https://core.usgovcloudapi.net/"
+                    "storageAccountEndPoint": "[replace(reference(resourceId(subscription().subscriptionId, resourceGroup().name, 'Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')), '2016-01-01').primaryEndpoints.blob, concat(variables('diagnosticsStorageAccountName'),'.blob.'), '')]"
                 }
             }
         },
@@ -361,7 +375,7 @@
                 "typeHandlerVersion": "1.7",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": "[split(parameters('fileUris'), ' ')]"
+                    "fileUris": "[split(variables('fileUris'), ' ')]"
                 },
                 "protectedSettings": {
                     "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', variables('firstFileName'), ' ', parameters('arguments'))]"
@@ -475,11 +489,25 @@
         {
             "apiVersion": "2017-09-01",
             "type": "Microsoft.Authorization/roleAssignments",
-            "name": "[variables('rbacGuid')]",
+            "name": "[variables('rbacGuidRg')]",
             "properties": {
-                "roleDefinitionId": "[variables('builtInRoleType')]",
+                "roleDefinitionId": "[variables('rbacRoleTypeRg')]",
                 "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
                 "scope": "[resourceGroup().id]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ]
+        },
+        {
+            "apiVersion": "2017-09-01",
+            "condition": "[not(equals(parameters('rbacRoleDefinitionId'),''))]",
+            "type": "Microsoft.Authorization/roleAssignments",
+            "name": "[variables('rbacGuidResource')]",
+            "properties": {
+                "roleDefinitionId": "[variables('rbacRoleTypeResource')]",
+                "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
+                "scope": "[parameters('rbacScope')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
