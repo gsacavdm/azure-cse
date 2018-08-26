@@ -1,6 +1,8 @@
 # Running deployment scripts using an Azure VM
 This is a sample Azure Resource Manager (ARM) template that you can use to launch a temporary Azure VM for deployment script execution.
-The VM will launch, execute a custom script using the Custom Script Extension and then delete itself. To ensure the ARM deployment succeeds, the deletion of the VM is added as a scheduled task for the VM, instead of being executed as part of the custom script.
+The VM will launch, execute a custom script using the Custom Script Extension and then delete itself. 
+
+To ensure the ARM deployment succeeds, the deletion of the VM is added as a scheduled task for the VM, instead of being executed as part of the custom script. The delete resource group task is scheduled to kick off 5 minutes after the deployment script completes and is visible via the Windows Task Scheduler.
 
 This template has two primary use cases:
 * For deployments that do not leverage ARM templates.
@@ -16,7 +18,29 @@ For deployments that just have a few scripts, all you need to do is:
 1. Modify the middle section of `azure-cse.ps1` to execute your deployment actions or call your scripts.
 1. Deploy!
 
+## Troubleshooting
+If the script fails, it won't schedule the delete task and even if it succeeds, you have 5 minutes to remote into the machine and poke around.
+
+If you want to emulate script exection:
+1. Remote into the cse machine
+1. Download SysInternals' PSExec on the box (you'll need to disable IE Enhanced Security Configuration).
+1. Launch a command prompt as admin
+1. From the command prompt, launch psexec as follows:
+
+    ```cmd
+    psexec -i -s cmd
+    ```
+
+1. From the new command prompt, emulate the VM CSE as follows:
+
+    ```cmd
+    cmd /C "powershell -ExecutionPolicy Unrestricted -File azure-cse.ps1
+    ```
+
+    Append any parameters you added (e.g. `-ExampleParam example`)
+
+
 ## To do
 * Make public-ip optional through a parameter `debug`
 * Add a way to log to somewhere persistent
-* Add support for parameters
+* Handle case where no scriptUris are provided - I think it breaks breaks things given an empty entry in fileUris due to the string split.
