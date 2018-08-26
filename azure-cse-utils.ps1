@@ -48,7 +48,7 @@ if (!(Get-PackageProvider | Where-Object Name -match NuGet)) {
 
 if (!(Get-Module -ListAvailable AzureRM)) {
   Write-Host "Installing AzureRM"
-  Install-Module AzureRM -Scope CurrentUser -Force
+  Install-Module AzureRM -Force
 }
 
 $environment = Get-AzureEnvironment
