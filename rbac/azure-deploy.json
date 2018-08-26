@@ -1,0 +1,46 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "type": "string",
+            "defaultValue": "azure-cse"
+        },
+        "virtualMachineName": {
+            "type": "string",
+            "defaultValue": "azure-cse"
+        },
+        "rbacRoleDefinitionId": {
+            "type": "string",
+            "metadata": {
+                "description": "Example: 8e3af657-a8ff-443c-a75c-2fe8c4bcb635 for Owner"
+            }
+        },
+        "rbacScope": {
+            "type": "string",
+            "metadata": {
+                "description": "Example: /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            }
+        }
+    },
+    "variables": {
+        "resourceGroupId": "[concat('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]",
+
+        "rbacRoleTypeResource": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('rbacRoleDefinitionId'))]",
+        "rbacGuidResource": "[guid(concat('cseResources', variables('resourceGroupId')))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-09-01",
+            "type": "Microsoft.Authorization/roleAssignments",
+            "name": "[variables('rbacGuidResource')]",
+            "properties": {
+                "roleDefinitionId": "[variables('rbacRoleTypeResource')]",
+                "principalId": "[reference(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', parameters('resourceGroupName'), '/providers/Microsoft.Compute/virtualMachines/', parameters('virtualMachineName')), '2017-12-01', 'Full').identity.principalId]",
+                "scope": "[parameters('rbacScope')]"
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
