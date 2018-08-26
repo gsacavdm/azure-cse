@@ -5,7 +5,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 Write-Host("Loading azure-cse-utils")
-. $PSScriptRoot/azure-cse-utils.ps1
+. ./azure-cse-utils.ps1
 
 Write-Host("Running custom script")
 # ****************************************************
@@ -17,7 +17,7 @@ Write-Host("Running custom script")
 # c) Unzip your deployment scripts & tools you added to the arguments parameters and kick-off your main deployment script
 
 # Sample script hosted in a GitHub gist
-$PSScriptRoot/azure-deploy.ps1 -ExampleParam $ExampleParam
+./azure-deploy.ps1 -ExampleParam $ExampleParam
 # ****************************************************
 
 Write-Host("Adding deletion scheduled task")
