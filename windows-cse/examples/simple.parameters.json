@@ -5,11 +5,8 @@
         "virtualMachineName": {
             "value": "azure-cse"
         },
-        "virtualMachineSize": {
-            "value": "Standard_D4s_v3"
-        },
         "scriptUris": {
-            "value": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/examples/simple.ps1"
+            "value": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows-cse/examples/simple.ps1"
         },
         "initScriptFileName": {
             "value": "simple.ps1"

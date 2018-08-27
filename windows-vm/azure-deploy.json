@@ -2,9 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "executionId": {
-            "type": "string"
-        },
         "virtualMachineName": {
             "type": "string"
         },
@@ -16,16 +13,6 @@
         },
         "adminPassword": {
             "type": "securestring"
-        },
-        "scriptUris": {
-            "type": "string"
-        },
-        "initScriptFileName": {
-            "type": "string"
-        },
-        "arguments": {
-            "type": "string",
-            "defaultValue": ""
         }
     },
     "variables": {
@@ -45,10 +32,6 @@
         
         "rbacRoleTypeRg": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "rbacGuidRg": "[guid(concat('cseResourceGroup', resourceGroup().id))]",
-
-        "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1",
-        
-        "fileUris": "[concat(parameters('scriptUris'), ' ', variables('coreFileUris'))]",
         
         "diagnosticsStorageAccountName": "[concat(replace(parameters('virtualMachineName'),'-',''), 'diag')]",
         "diagnosticsStorageAccountId": "[concat('Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName'))]",
@@ -353,28 +336,6 @@
                     "storageAccountEndPoint": "[replace(reference(resourceId(subscription().subscriptionId, resourceGroup().name, 'Microsoft.Storage/storageAccounts/', variables('diagnosticsStorageAccountName')), '2016-01-01').primaryEndpoints.blob, concat(variables('diagnosticsStorageAccountName'),'.blob.'), '')]"
                 }
             }
-        },
-        {
-            "name": "[concat(parameters('virtualMachineName'),'/CustomScriptExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "location": "[variables('location')]",
-            "apiVersion": "2015-06-15",
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.7",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": "[split(variables('fileUris'), ' ')]"
-                },
-                "protectedSettings": {
-                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', parameters('initScriptFileName'), ' -ExecutionId ', parameters('executionId'), ' ', parameters('arguments'))]"
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/',parameters('virtualMachineName'),'/extensions/', variables('diagnosticsExtensionName'))]",
-                "[concat('Microsoft.Authorization/roleAssignments/', variables('rbacGuidRg'))]"
-            ]
         },
         {
             "name": "[variables('diagnosticsStorageAccountName')]",
