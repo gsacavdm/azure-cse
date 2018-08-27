@@ -9,10 +9,13 @@
             "value": "Standard_D4s_v3"
         },
         "scriptUris": {
-            "value": "https://gist.githubusercontent.com/gsacavdm/371bc219d3a6f708aec399894cc13781/raw/75c72177f07610902f8148e9757307edb4974601/azure-deploy.ps1"
+            "value": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/examples/simple.ps1"
+        },
+        "initScriptFileName": {
+            "value": "simple.ps1"
         },
         "arguments": {
-            "value": "-ExampleParam example"
+            "value": "-ResourceGroupName azure-cse-test -ResourceGroupLocation usgovvirginia"
         }
     }
 }

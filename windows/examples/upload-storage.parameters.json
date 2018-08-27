@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+      "virtualMachineName": {
+          "value": "azure-cse"
+      },
+      "virtualMachineSize": {
+          "value": "Standard_D4s_v3"
+      },
+      "scriptUris": {
+          "value": "https://github.com/gsacavdm/azure-cse/archive/master.zip https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/examples/upload-storage.ps1"
+      },
+      "initScriptFileName": {
+          "value": "upload-storage.ps1"
+      },
+      "arguments": {
+          "value": "-File master.zip"
+      }
+  }
+}

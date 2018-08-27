@@ -18,8 +18,10 @@
             "type": "securestring"
         },
         "scriptUris": {
-            "type": "string",
-            "defaultValue": ""
+            "type": "string"
+        },
+        "initScriptFileName": {
+            "type": "string"
         },
         "arguments": {
             "type": "string",
@@ -44,11 +46,7 @@
         "rbacRoleTypeRg": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
         "rbacGuidRg": "[guid(concat('cseResourceGroup', resourceGroup().id))]",
 
-        "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse.ps1",
-        "UriFileNamePieces": "[split(variables('coreFileUris'), '/')]",
-        "firstFileNameString": "[variables('UriFileNamePieces')[sub(length(variables('UriFileNamePieces')), 1)]]",
-        "firstFileNameBreakString": "[split(variables('firstFileNameString'), '?')]",
-        "firstFileName": "[variables('firstFileNameBreakString')[0]]",
+        "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-utils.ps1 https://raw.githubusercontent.com/gsacavdm/azure-cse/master/windows/azure-cse-delete.ps1",
         
         "fileUris": "[concat(parameters('scriptUris'), ' ', variables('coreFileUris'))]",
         
@@ -370,7 +368,7 @@
                     "fileUris": "[split(variables('fileUris'), ' ')]"
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', variables('firstFileName'), ' -ExecutionId ', parameters('executionId'), ' ', parameters('arguments'))]"
+                    "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', parameters('initScriptFileName'), ' -ExecutionId ', parameters('executionId'), ' ', parameters('arguments'))]"
                 }
             },
             "dependsOn": [
