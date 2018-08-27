@@ -13,7 +13,7 @@ Write-Host("Loading azure-cse-utils")
 . ./azure-cse-utils.ps1
 
 Write-Host("Running custom script")
-$metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"}
+$metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"} -UseBasicParsing
 $metadata = ConvertFrom-Json ($metadataResponse.Content)
 
 $resourceGroupName = $metadata.resourceGroupName

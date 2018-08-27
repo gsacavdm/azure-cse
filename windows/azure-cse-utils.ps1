@@ -25,7 +25,7 @@ function Get-AzureEnvironment () {
 }
 
 function Get-AzureResourceGroup () {
-  $metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"}
+  $metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"} -UseBasicParsing
   $metadata = ConvertFrom-Json ($metadataResponse.Content)
 
   return $metadata.ResourceGroupName
