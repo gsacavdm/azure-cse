@@ -9,7 +9,7 @@
             "value": "Standard_D4s_v3"
         },
         "scriptUris": {
-            "value": "https://gist.githubusercontent.com/gsacavdm/371bc219d3a6f708aec399894cc13781/raw/183042f46d94714ef52b800c8cafa2ee8ba27a37/azure-deploy.ps1"
+            "value": "https://gist.githubusercontent.com/gsacavdm/371bc219d3a6f708aec399894cc13781/raw/75c72177f07610902f8148e9757307edb4974601/azure-deploy.ps1"
         },
         "arguments": {
             "value": "-ExampleParam example"
