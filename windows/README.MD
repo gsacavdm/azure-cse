@@ -48,4 +48,6 @@ If you want to emulate script exection:
 * Split VM from CSE
 * Add a way to log to somewhere persistent
 * Don't download AzureRM PS module via Nuget, include zipped module in fileUris, unzip and load.
+* Switch Windows image to Win10 so that we don't need UseBasicParsing
+* Test for Azure China, in particular call to `management.azure.com` in `azure-cse-utils.ps1`
 * Make public-ip optional through a parameter `debug`
