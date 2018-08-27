@@ -177,7 +177,7 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "RDP",
+                        "name": "SSH",
                         "properties": {
                             "priority": 300,
                             "protocol": "TCP",
@@ -188,7 +188,7 @@
                             "sourceAddressPrefix": "*",
                             "sourcePortRange": "*",
                             "destinationAddressPrefix": "*",
-                            "destinationPortRange": "3389"
+                            "destinationPortRange": "22"
                         }
                     }
                 ]
