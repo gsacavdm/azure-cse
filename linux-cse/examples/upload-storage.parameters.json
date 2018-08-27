@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachineName": {
+            "value": "azure-cse-linux"
+        },
+        "scriptUris": {
+            "value": "https://download.sysinternals.com/files/ProcessExplorer.zip https://raw.githubusercontent.com/gsacavdm/azure-cse/master/linux-cse/examples/upload-storage.sh"
+        },
+        "initScriptFileName": {
+            "value": "upload-storage.sh"
+        },
+        "arguments": {
+            "value": "ProcessExplorer.zip azurecsetestlinux"
+        }
+    }
+}

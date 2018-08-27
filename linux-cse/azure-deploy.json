@@ -1,0 +1,47 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "executionId": {
+            "type": "string"
+        },
+        "virtualMachineName": {
+            "type": "string"
+        },
+        "scriptUris": {
+            "type": "string"
+        },
+        "initScriptFileName": {
+            "type": "string"
+        },
+        "arguments": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "coreFileUris": "https://raw.githubusercontent.com/gsacavdm/azure-cse/master/linux-cse/azure-cse-utils.sh",      
+        "fileUris": "[concat(parameters('scriptUris'), ' ', variables('coreFileUris'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('virtualMachineName'),'/CustomScriptExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "[variables('location')]",
+            "apiVersion": "2015-06-15",
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": "[split(variables('fileUris'), ' ')]"
+                },
+                "protectedSettings": {
+                    "commandToExecute": "[concat ('sh ', parameters('initScriptFileName'), ' ', parameters('arguments'), '  ', parameters('executionId'))]"
+                }
+            }
+        }
+    ]
+}
