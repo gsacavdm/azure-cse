@@ -45,6 +45,6 @@ If you want to emulate script exection:
 
 
 ## To do
-* Make public-ip optional through a parameter `debug`
+* Split VM from CSE
 * Add a way to log to somewhere persistent
-* Handle case where no scriptUris are provided - I think it breaks breaks things given an empty entry in fileUris due to the string split.
+* Make public-ip optional through a parameter `debug`
