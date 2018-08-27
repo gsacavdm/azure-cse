@@ -15,7 +15,7 @@
           "value": "upload-storage.ps1"
       },
       "arguments": {
-          "value": "-File master.zip"
+          "value": "-File master.zip -StorageAccountName azurecsetest"
       }
   }
 }

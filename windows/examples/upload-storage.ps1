@@ -3,7 +3,8 @@ param (
   [string] $ExecutionId  = "",
 
   # Replace with your own parameters:
-  [string] $File
+  [string] $File,
+  [string] $StorageAccountName
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,11 +16,18 @@ Write-Host("Running custom script")
 $metadataResponse = Invoke-WebRequest "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H @{"Metadata"="true"}
 $metadata = ConvertFrom-Json ($metadataResponse.Content)
 
-$storageAccount = New-AzureRmStorageAccount -ResourceGroupName $metadata.resourceGroupName `
-  -Name "azurecse" `
-  -Location $metadata.location `
-  -SkuName Standard_LRS `
-  -Kind Storage
+$resourceGroupName = $metadata.resourceGroupName
+$location = $metadata.location
+
+$storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where StorageAccountName -match $storageAccountName
+
+if (!($exists)) {
+  $storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName `
+    -Name $storageAccountName `
+    -Location $location `
+    -SkuName Standard_LRS `
+    -Kind Storage
+}
 
 $ctx = $storageAccount.Context
 
