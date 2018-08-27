@@ -19,7 +19,7 @@ For deployments that just have a few scripts, all you need to do is:
 1. Deploy!
 
     ```bash
-    az group deployment create -g azure-cse -n $(date +%Y%m%d_%H%M%S) --template-file azure-deploy.json --parameters executionId=$(date +%Y%m%d_%H%M%S)
+    az group deployment create -g azure-cse -n $(date +%Y%m%d_%H%M%S) --template-file azure-deploy.json --parameters @azure-deploy.parameters.json --parameters adminUsername=azure-cse-admin --parameters adminPassword=$PASSWORD --parameters executionId=$(date +%Y%m%d_%H%M%S)
     ```
 
 ## Troubleshooting
