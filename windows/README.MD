@@ -47,4 +47,5 @@ If you want to emulate script exection:
 ## To do
 * Split VM from CSE
 * Add a way to log to somewhere persistent
+* Don't download AzureRM PS module via Nuget, include zipped module in fileUris, unzip and load.
 * Make public-ip optional through a parameter `debug`
