@@ -19,7 +19,7 @@ $metadata = ConvertFrom-Json ($metadataResponse.Content)
 $resourceGroupName = $metadata.resourceGroupName
 $location = $metadata.location
 
-$storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroup | Where StorageAccountName -match $storageAccountName
+$storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName | Where StorageAccountName -match $storageAccountName
 
 if (!($exists)) {
   $storageAccount = New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName `
