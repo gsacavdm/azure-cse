@@ -26,7 +26,7 @@ Write-Host "Get-AzureRmVm"
 Get-AzureRmVm >> "D:\VMs.txt"
 
 Write-Host "New-AzureRmResourceGroup"
-New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation 
+New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation  -Force
 # ****************************************************
 
 if ($DeleteAfterDone) {
