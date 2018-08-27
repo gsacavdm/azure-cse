@@ -25,11 +25,11 @@ echo "Running custom script"
 echo "az vm list"
 az vm list >> "/tmp/VMs.txt"
 
-echo "az group new"
-az group new -n $resource_group_name -l $resource_group_location
+echo "az group create"
+az group create -n $resource_group_name -l $resource_group_location
 # ****************************************************
 
-this_resource_group_name=$(get_azure_resource_group())
+this_resource_group_name=$(getAzureResourceGroup)
 if [ $delete_after_done -eq "true" ]; then
   echo "az group delete"
   az group delete -n $this_resource_group_name --no-wait

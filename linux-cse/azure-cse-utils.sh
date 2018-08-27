@@ -1,10 +1,11 @@
 #!/bin/sh
+set -e
 
-function get-azure-environment () {
-  local metadata=$(curl "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H "Metadata:true")
-  local endpoints=$(curl "https://management.azure.com/metadata/endpoints?api-version=2017-12-01")
+getAzureEnvironment() {
+  metadata=$(curl "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H "Metadata:true")
+  endpoints=$(curl "https://management.azure.com/metadata/endpoints?api-version=2017-12-01")
 
-  local location=$(echo $metadata | jq .location -r)
+  location=$(echo $metadata | jq .location -r)
 
   is_ww=$(echo $endpoints | jq '.cloudEndpoint.public.locations[]' -r | grep -w $location)
   is_us=$(echo $endpoints | jq '.cloudEndpoint.usGovCloud.locations[]' -r | grep -w $location)
@@ -17,23 +18,33 @@ function get-azure-environment () {
   if [ ! -z $is_cn ]; then environment="AzureChinaCloud"; fi
   if [ ! -z $is_de ]; then environment="AzureGermanCloud"; fi
 
-  return $environment
+  echo $environment
 }
 
-function get_azure_resource_group () {
-  local metadata=$(curl "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H "Metadata:true")
-  return $(echo $metadata | jq .resourceGroupName -r)
+getAzureResourceGroup() {
+  metadata=$(curl "http://169.254.169.254/metadata/instance/compute?api-version=2018-02-01" -H "Metadata:true")
+  echo $(echo $metadata | jq .resourceGroupName -r)
 }
 
-function install_cli () {
+installJq() {
+  sudo apt-get install jq --yes
+}
+
+installAzureCli() {
   AZ_REPO=$(lsb_release -cs)
   echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
-      sudo tee /etc/apt/sources.list.d/azure-cli.list
-  curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-  sudo apt-get install apt-transport-https
-  sudo apt-get update && sudo apt-get install azure-cli
+      tee /etc/apt/sources.list.d/azure-cli.list
+  curl -L https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+  apt-get install apt-transport-https --yes
+  apt-get update && sudo apt-get install azure-cli --yes
 }
 
-environment=$(get_azure_environment())
-az cloud set -s $environment
+export get_azure_environment
+export get_azure_resource_group
+
+installJq
+installAzureCli
+
+environment=$(getAzureEnvironment)
+az cloud set -n $environment
 az login --identity
