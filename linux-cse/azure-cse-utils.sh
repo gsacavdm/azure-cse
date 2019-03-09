@@ -7,10 +7,11 @@ getAzureEnvironment() {
 
   location=$(echo $metadata | jq .location -r)
 
-  is_ww=$(echo $endpoints | jq '.cloudEndpoint.public.locations[]' -r | grep -w $location)
-  is_us=$(echo $endpoints | jq '.cloudEndpoint.usGovCloud.locations[]' -r | grep -w $location)
-  is_cn=$(echo $endpoints | jq '.cloudEndpoint.chinaCloud.locations[]' -r | grep -w $location)
-  is_de=$(echo $endpoints | jq '.cloudEndpoint.germanCloud.locations[]' -r | grep -w $location)
+  # Or with true since the grep command exits with non-zero when not found
+  is_ww=$(echo $endpoints | jq '.cloudEndpoint.public.locations[]' -r | grep -w $location) || true
+  is_us=$(echo $endpoints | jq '.cloudEndpoint.usGovCloud.locations[]' -r | grep -w $location) || true
+  is_cn=$(echo $endpoints | jq '.cloudEndpoint.chinaCloud.locations[]' -r | grep -w $location) || true
+  is_de=$(echo $endpoints | jq '.cloudEndpoint.germanCloud.locations[]' -r | grep -w $location) || true
 
   environment="Unknown"
   if [ ! -z $is_ww ]; then environment="AzureCloud"; fi
@@ -42,9 +43,17 @@ installAzureCli() {
 export get_azure_environment
 export get_azure_resource_group
 
+echo "Installing JQ"
 installJq
+
+echo "Installing Azure CLI"
 installAzureCli
 
+echo "Determining Azure Environment"
 environment=$(getAzureEnvironment)
+echo "Azure Environment: $environment"
+
+echo "Logging in to Azure CLI"
 az cloud set -n $environment
 az login --identity
+
