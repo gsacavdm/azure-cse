@@ -9,9 +9,9 @@ There's an option to delete the VM after it completes script execution. Overall,
 ## See it in action
 No setup needed, deploy by running this command:
 
-    ```bash
-    az group deployment create -g azure-cse-linux -n $(date +%Y%m%d_%H%M%S) --template-file azure-deploy.json --parameters @examples/simple.parameters.json --parameters executionId=$(date +%Y%m%d_%H%M%S)
-    ```
+```bash
+az group deployment create -g azure-cse-linux -n $(date +%Y%m%d_%H%M%S) --template-file azure-deploy.json --parameters @examples/simple.parameters.json --parameters executionId=$(date +%Y%m%d_%H%M%S)
+```
 
 ## Customize for your deployment
 1. Publish your scripts and deployment assets (zip, json, xml, etc) to a URL that ARM can access
