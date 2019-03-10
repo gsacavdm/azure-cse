@@ -24,10 +24,8 @@
         }
     },
     "variables": {
-        "resourceGroupId": "[concat('Microsoft.Resources/resourceGroups/', parameters('resourceGroupName'))]",
-
         "rbacRoleTypeResource": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', parameters('rbacRoleDefinitionId'))]",
-        "rbacGuidResource": "[guid(concat('cseResources', subscription().subscriptionId))]"
+        "rbacGuidResource": "[guid(concat(parameters('resourceGroupName'), parameters('virtualMachineName'), subscription().subscriptionId))]"
     },
     "resources": [
         {
