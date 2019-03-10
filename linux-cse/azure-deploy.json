@@ -47,7 +47,7 @@
                     "timestamp": "[int(parameters('nowTimestamp'))]"
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat ('sh ', parameters('initScriptFileName'), ' ', parameters('arguments'), '  ', parameters('executionId'))]"
+                    "commandToExecute": "[concat ('sh ', parameters('initScriptFileName'), ' ', parameters('executionId'), ' ', parameters('arguments'))]"
                 }
             }
         }
