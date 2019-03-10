@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 execution_id=$1
 
@@ -13,8 +13,8 @@ echo "Loading azure-cse-utils"
 . ./azure-cse-utils.sh
 
 echo "Looking up blob $storage_account_name..."
-resouce_group=$(az storage account list --query "[?name=='$storage_account_name'].resourceGroup" -o json | jq -r '.[0]')
-if [ "$resouce_group" == "null" ]
+resource_group=$(az storage account list --query "[?name=='$storage_account_name'].resourceGroup" -o json | jq -r '.[0]')
+if [ "$resource_group" == "null" ]
 then
   resource_group=$(getAzureResourceGroup)
 
@@ -23,7 +23,7 @@ then
 fi
 
 echo "Getting storage account $storage_account_name key..."
-storage_account_key=(az storage account keys list -g $resource_group -n $storage_account_name --query "[0].value" -o tsv)
+storage_account_key=$(az storage account keys list -g $resource_group -n $storage_account_name --query "[0].value" -o tsv)
 
 echo "Looking up container $storage_container_name in storage account $storage_account_name..."
 storage_container=$(az storage container list --account-name $storage_account_name --account-key $storage_account_key --query "[?name=='$storage_container_name'].name" -o json | jq -r '.[0]')
