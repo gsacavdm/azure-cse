@@ -12,7 +12,7 @@
             "value": "upload-storage.sh"
         },
         "arguments": {
-            "value": "ProcessExplorer.zip azurecsetestlinux"
+            "value": "ProcessExplorer.zip azurecsetestlinux mycontainer"
         }
     }
 }
