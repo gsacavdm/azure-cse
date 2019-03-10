@@ -17,6 +17,13 @@
         "arguments": {
             "type": "string",
             "defaultValue": ""
+        },
+        "nowTimestamp": {
+            "type": "string",
+            "defaultValue": "[utcNow('yyMMddHHmm')]",
+            "metadata": {
+                "description": "Used to ensure the CSE reruns on every deployment. Don't pass in any values, default does the trick."
+            }
         }
     },
     "variables": {
@@ -36,7 +43,8 @@
                 "typeHandlerVersion": "1.7",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": "[split(variables('fileUris'), ' ')]"
+                    "fileUris": "[split(variables('fileUris'), ' ')]",
+                    "timestamp": "[int(parameters('nowTimestamp'))]"
                 },
                 "protectedSettings": {
                     "commandToExecute": "[concat ('powershell -ExecutionPolicy Unrestricted -File ', parameters('initScriptFileName'), ' -ExecutionId ', parameters('executionId'), ' ', parameters('arguments'))]"
